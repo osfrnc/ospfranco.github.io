@@ -91,21 +91,21 @@ class AppDelegate: RCTAppDelegate {
     #endif
   }
 
+  // Use this one to customize the rootview before it is returned
+  override func customize(_ rootView: RCTRootView) {
+    rootView.wantsLayer = true
+    rootView.backgroundColor = .clear
+    rootView.layer?.backgroundColor = .clear
+  }
+
+
   // didFinishLaunching for macOS apps, for iOS it is slightly different (returns a BOOL) just overload the correct one
   override func applicationDidFinishLaunching(_ notification: Notification) {
     self.automaticallyLoadReactNativeWindow = false // Important to prevent RCTAppDelegate from trying to init the default RN View
     super.applicationDidFinishLaunching(notification) // Needs to be called on the latest versions to initialize all the internal RN variables and state
 
-    let rootViewFactoryConfiguration = RCTRootViewFactoryConfiguration(
-      bundleURLBlock: self.bundleURL,
-      newArchEnabled: false,
-      turboModuleEnabled: true,
-      bridgelessEnabled: false)
-
-    self.rootViewFactory = RCTRootViewFactory(configuration: rootViewFactoryConfiguration) // This internal property is not automagically created
-    let rootView = self.rootViewFactory.view(withModuleName: "[Your bundle name]") // Finally create a RN Hosting View
-
-    // add it to your NSWindow or hosting NSView
+    let rootView = self.rootViewFactory.view(withModuleName: "[Your bundle name]") // Finally create a RN Hosting View`
+    // add it to your NSWindow or HostingNSView
   }
 }
 </code></pre>
