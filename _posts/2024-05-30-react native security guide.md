@@ -13,11 +13,11 @@ In this guide, we will explore various security considerations and best practice
 
 # Preface
 
-Let's address this upfront: there is no real way to protect data once it is on the device. A motivated attacker with root or hardware access to the device will eventually be able to bypass security features when storing on-device data. Here is a [1Password write-up](https://blog.1password.com/local-threats-device-protections/) that explains this well.
+Let's address this upfront: there is no 100% secure data protection once it is saved in-device (on runtime the OS will protect memory and offer mechanism to limit access even more, might still be by-passable with a rooted device though). A motivated attacker with root or hardware access to the device will eventually be able to bypass security features when storing in-device data. Here is a [1Password write-up](https://blog.1password.com/local-threats-device-protections/) that explains this well.
 
-As we are not all building vault apps, this should be our guiding principle: **do not put anything on the user's device that you cannot afford to leak**.
+As we are not all building vault apps, this should be our guiding principle: **do not put anything in the user's device that you cannot afford to leak**.
 
-But that doesn't mean all is lost. If the attacker does not have direct access to the machine, applying protections will still be a sufficient deterrent (and secure enough unless they actually get hold of the hardware). Using the best-known security practices can make some attacks so cumbersome that they act as a deterrent, so we should still use them.
+But that doesn't mean all is lost. If the attacker does not have direct access to the device, applying protections will still be a sufficient deterrent. Using the best-known security practices can make some attacks so cumbersome they are no longer practical.
 
 # Secrets
 
@@ -25,15 +25,19 @@ Armed with this knowledge, there is one inconvenient truth: **you won't be able 
 
 Is there a way to protect secrets? Using a gateway would be one way, but sometimes it is not possible, for example, when using a third-party SDK that ingests the key directly. There is nothing we can do about that.
 
+## Device Attestation
+
 An important thing to note here is the existence of device attestation. Device attestation is a process where the OS tries to verify that the device and/or app has not been tampered with. There are [APIs for iOS](https://support.apple.com/guide/deployment/managed-device-attestation-dep28afbde6a/web) and [Android](https://developer.android.com/privacy-and-security/safetynet/attestation). Some companies offer this as a service with an SDK, allowing you to verify the device/app before sending data to it. However, this is a not very well-explored topic and may be time-consuming or expensive.
 
-With device attestation, you could have a more secure (read: more inconvenient to hack) secret management:
+With device attestation, you could have a more secure (or at least more inconvenient to hack) secret management:
 
 1. On app start, perform device attestation. If it fails: game over, you tampered with the device/app, so no access.
 2. On first start, download the secrets and store them in your favorite cryptographically secure storage.
 3. Combine this with partial keys that need to be fetched from a server each time to decode the secrets/data.
 
 Again, once a hacker has access to the device, it's game over. They can even mess with the OS internals to defeat device attestation, but at least you can make their lives harder.
+
+## Env Packages
 
 A final point to mention is packages like `react-native-dotenv` and `react-native-config`. I don't like them because they can be misleading (and have caused me trouble compiling them in the past). These "environment variables" packages still package your environment variables inside the app bundle and then read them at runtime. While they have not intentionally deceived people into thinking they are secure, the naming and the mixing of real environment variables with what they do have at least led unaware developers to think their secrets are secure (speaking from personal experience).
 
@@ -97,11 +101,9 @@ const myKey = null;
 
 Again, nothing is truly secure, but at least we have an extra layer of protection. Clearing the memory is also a best practice to prevent leaks. We then rely on the library to have correctly implemented an encryption algorithm.
 
-> As a funny side note:
 > Apple's Keychain is just an API wrapper against a SQLite database that has some OS protections bolted in.
+
 > Keystore is just an API for retrieving/generating/saving secure crypto keys. The actual API that saves data is EncryptedSharedPreferences, which just saves files to disk with encryption bolted on.
->
-> :)
 
 ## Use Secure Storage
 
@@ -154,6 +156,4 @@ If your app requires an even higher level of security, it might be worth looking
 
 If you are on the market for rolling your own encryption or need some crypto math, just use [react-native-quick-crypto](https://github.com/margelo/react-native-quick-crypto), it's a (re)implementation of the [node's crypto module](https://nodejs.org/api/crypto.html). There are many people who are not fans of the API, doesn't matter. It's proven and fast since it uses C++ bindings. It's also somewhat incomplete but more APIs can be added if you are willing to sponsor the work.
 
-# Conclusion
-
-It's still worth looking into the [official RN documentation](https://reactnative.dev/docs/security#storing-sensitive-info); however, I hope this guide is a bit more hands-on.
+It's still worth looking into the [official RN documentation](https://reactnative.dev/docs/security#storing-sensitive-info).
