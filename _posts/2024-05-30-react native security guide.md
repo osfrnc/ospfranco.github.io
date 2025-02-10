@@ -13,7 +13,7 @@ In this guide, we will explore various security considerations and best practice
 
 # Preface
 
-Let's address this upfront: there is no 100% secure data protection once it is saved in-device (on runtime the OS will protect memory and offer mechanism to limit access even more, might still be by-passable with a rooted device though). A motivated attacker with root or hardware access to the device will eventually be able to bypass security features when storing in-device data. Here is a [1Password write-up](https://blog.1password.com/local-threats-device-protections/) that explains this well.
+Let's address this upfront: there is no 100% secure data protection once it is saved on-device (on runtime the OS will protect memory and offer mechanism to limit access even more, might still be by-passable with a rooted device though). A motivated attacker with root or hardware access to the device will eventually be able to bypass security features when storing on-device data. Here is a [1Password write-up](https://blog.1password.com/local-threats-device-protections/) that explains this well.
 
 As we are not all building vault apps, this should be our guiding principle: **do not put anything in the user's device that you cannot afford to leak**.
 
